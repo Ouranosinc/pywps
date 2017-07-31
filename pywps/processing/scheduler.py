@@ -49,7 +49,7 @@ class Scheduler(Processing):
             else:
                 jt.args = [dump_filename]
             jt.joinFiles = True
-            jt.outputPath = ":{}".format(os.path.join(self.workdir, "job-output.txt"))
+            jt.outputPath = ":{}".format(os.path.join(self.job.workdir, "job-output.txt"))
             # run job
             jobid = session.runJob(jt)
             LOGGER.info('Your job has been submitted with ID %s', jobid)
