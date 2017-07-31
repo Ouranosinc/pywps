@@ -45,7 +45,11 @@ class Scheduler(Processing):
                 config.get_config_value('processing', 'path'),
                 'joblauncher')
             if os.getenv("PYWPS_CFG"):
-                jt.args = ['-c', os.getenv('PYWPS_CFG'), dump_filename]
+                import shutil
+                cfg_file = os.path.join(self.job.workdir, "pywps.cfg")
+                shutil.copy2(os.getenv('PYWPS_CFG'), cfg_file)
+                LOGGER.debug("Copied pywps config: %s", cfg_file)
+                jt.args = ['-c', cfg_file, dump_filename]
             else:
                 jt.args = [dump_filename]
             jt.joinFiles = True
@@ -56,7 +60,7 @@ class Scheduler(Processing):
             # show status
             import time
             time.sleep(1)
-            LOGGER.info('Job status %s', session.jobStatus(jobid))
+            LOGGER.info('Job status: %s', session.jobStatus(jobid))
             # Cleaning up
             session.deleteJobTemplate(jt)
             # close session
