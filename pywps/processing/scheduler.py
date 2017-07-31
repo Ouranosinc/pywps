@@ -49,10 +49,14 @@ class Scheduler(Processing):
             else:
                 jt.args = [dump_filename]
             jt.joinFiles = True
-            jt.outputPath = ":job.out"
+            jt.outputPath = ":{}".format(os.path.join(self.workdir, "job-output.txt"))
             # run job
             jobid = session.runJob(jt)
             LOGGER.info('Your job has been submitted with ID %s', jobid)
+            # show status
+            import time
+            time.sleep(1)
+            LOGGER.info('Job status %s', session.jobStatus(jobid))
             # Cleaning up
             session.deleteJobTemplate(jt)
             # close session
