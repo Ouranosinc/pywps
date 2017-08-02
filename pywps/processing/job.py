@@ -6,6 +6,7 @@
 
 import os
 import tempfile
+import pywps.configuration as config
 
 import logging
 LOGGER = logging.getLogger("PYWPS")
@@ -78,6 +79,23 @@ class JobLauncher(object):
 
     def _run_job(self, filename):
         job = Job.load(filename)
+        # init config
+        if 'PYWPS_CFG' in os.environ:
+            config.load_configuration(os.environ['PYWPS_CFG'])
+        # update PATH
+        os.environ['PATH'] = "{0}:{1}".format(
+            config.get_config_value('processing', 'path'),
+            os.environ.get('PATH'))
+        # cd into workdir
+        os.chdir(job.workdir)
+        # init logger ... code copied from app.Service
+        if config.get_config_value('logging', 'file') and config.get_config_value('logging', 'level'):
+            LOGGER.setLevel(getattr(logging, config.get_config_value('logging', 'level')))
+            fh = logging.FileHandler(config.get_config_value('logging', 'file'))
+            fh.setFormatter(logging.Formatter(config.get_config_value('logging', 'format')))
+            LOGGER.addHandler(fh)
+        else:  # NullHandler
+            LOGGER.addHandler(logging.NullHandler())
         job.run()
 
 
