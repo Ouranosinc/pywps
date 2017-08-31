@@ -9,10 +9,9 @@
 
 import unittest
 
-from pywps.processing.basic import MultiProcessing
-
 from pywps import configuration
 import pywps.processing
+from pywps.processing.basic import MultiProcessing
 from pywps import Process
 from pywps.app import WPSRequest
 from pywps.app import WPSResponse
