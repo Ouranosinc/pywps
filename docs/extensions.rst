@@ -82,7 +82,7 @@ the scheduler works.
 
     Interaction diagram for PyWPS scheduler extension.
 
-The following image shows the an example usage of the scheduler extension with
+The following image shows an example of using the scheduler extension with
 Slurm.
 
 .. figure:: _images/pywps-slurm-demo-architecture.png
