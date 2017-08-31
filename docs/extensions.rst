@@ -47,7 +47,7 @@ install the dependencies with::
 
   $ conda install drmaa dill
 
-The package `dill`_ is an enchanced version
+The package `dill`_ is an enhanced version
 of the Python pickle module for serializing and de-serializing Python objects.
 
 .. warning:: In addition you need to install and configure the drmaa modules for
@@ -57,7 +57,7 @@ of the Python pickle module for serializing and de-serializing Python objects.
 
 .. note:: See an **example** on how to use this extension with a
   Slurm batch system in a
-  `docker demo <https://github.com/bird-house/birdhouse-playground/tree/master/docker/pywps-scheduler-demo>`_.
+  `docker demo <https://github.com/bird-house/birdhouse-docker-images/tree/master/pywps-scheduler-demo>`_.
 
 .. note:: `COWS WPS <http://cows.ceda.ac.uk/cows_wps/install.html#installing-the-sun-grid-engine-scheduler>`_
   has a scheduler extension for Sun Grid Engine (SGE).
@@ -81,6 +81,13 @@ the scheduler works.
 .. figure:: _images/pywps-scheduler-extension_interactions.png
 
     Interaction diagram for PyWPS scheduler extension.
+
+The following image shows an example of using the scheduler extension with
+Slurm.
+
+.. figure:: _images/pywps-slurm-demo-architecture.png
+
+    Example of PyWPS scheduler extension usage with Slurm.
 
 .. _DRMAA: https://pypi.python.org/pypi/drmaa
 .. _dill: https://pypi.python.org/pypi/dill
