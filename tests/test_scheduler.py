@@ -7,7 +7,7 @@ class Process(object):
         self.identifier = identifier
 
     def _run_process(self, wps_request, wps_response):
-        print "job done"
+        pass
 
 
 class WPSRequest(object):
