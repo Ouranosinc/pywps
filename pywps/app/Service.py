@@ -27,6 +27,8 @@ import stat
 import sys
 import uuid
 import copy
+import requests
+import shutil
 
 LOGGER = logging.getLogger("PYWPS")
 
@@ -404,7 +406,7 @@ class Service(object):
                 extension=_extension(complexinput))
 
             try:
-                (reference_file, reference_file_data) = _openurl(datain)
+                reference_file = _openurl(datain)
                 data_size = reference_file.headers.get('Content-Length', 0)
             except Exception as e:
                 raise NoApplicableCode('File reference error: %s' % e)
@@ -413,7 +415,8 @@ class Service(object):
             # calculate the size
             if data_size == 0:
                 LOGGER.debug('no Content-Length, calculating size')
-                data_size = _get_datasize(reference_file_data)
+                # TODO: check content-length
+                # data_size = _get_datasize(reference_file_data)
 
             # check if input file size was not exceeded
             complexinput.calculate_max_input_size()
@@ -424,8 +427,8 @@ class Service(object):
                                        complexinput.max_size, complexinput.identifier)
 
             try:
-                with open(tmp_file, 'w') as f:
-                    f.write(reference_file_data)
+                with open(tmp_file, 'wb') as f:
+                    shutil.copyfileobj(reference_file.raw, f)
             except Exception as e:
                 raise NoApplicableCode(e)
 
@@ -672,18 +675,13 @@ def _openurl(inpt):
         if 'body' in inpt:
             data = inpt.get('body')
         elif 'bodyreference' in inpt:
-            data = urlopen(url=inpt.get('bodyreference')).read()
+            data = requests.get(url=inpt.get('bodyreference')).text
 
-        reference_file = urlopen(url=href, data=data)
+        reference_file = requests.post(url=href, data=data, stream=True)
     else:
-        reference_file = urlopen(url=href)
+        reference_file = requests.get(url=href, stream=True)
 
-    if PY2:
-        reference_file_data = reference_file.read()
-    else:
-        reference_file_data = reference_file.read().decode('utf-8')
-
-    return (reference_file, reference_file_data)
+    return reference_file
 
 
 def _get_datasize(reference_file_data):
