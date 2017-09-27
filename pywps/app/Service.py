@@ -452,7 +452,10 @@ class Service(object):
                 os.symlink(inpt_file, tmp_file)
                 LOGGER.debug("Linked input file %s to %s.", inpt_file, tmp_file)
             except Exception as e:
-                raise NoApplicableCode("Could not link file reference: %s" % e)
+                # TODO: handle os.symlink on windows
+                # raise NoApplicableCode("Could not link file reference: %s" % e)
+                LOGGER.warn("Could not link file reference")
+                shutil.copy2(inpt_file, tmp_file)
 
             complexinput.file = tmp_file
             complexinput.url = datain.get('href')
