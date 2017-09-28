@@ -95,13 +95,19 @@ class FileStorage(StorageAbstract):
         file_name = output.file
         request_uuid = output.uuid or uuid.uuid1()
 
-        file_block_size = os.stat(file_name).st_blksize
-        # get_free_space delivers the numer of free blocks, not the available size!
-        avail_size = get_free_space(self.target) * file_block_size
-        file_size = os.stat(file_name).st_size
+        import sys
+        is_windows = hasattr(sys, 'getwindowsversion')
+        if is_windows:
+            # TODO: calculate available size on windows. os.stat has no st_blksize.
+            avail_size = actual_file_size = 0
+        else:
+            file_block_size = os.stat(file_name).st_blksize
+            # get_free_space delivers the numer of free blocks, not the available size!
+            avail_size = get_free_space(self.target) * file_block_size
+            file_size = os.stat(file_name).st_size
 
-        # calculate space used according to block size
-        actual_file_size = math.ceil(file_size / float(file_block_size)) * file_block_size
+            # calculate space used according to block size
+            actual_file_size = math.ceil(file_size / float(file_block_size)) * file_block_size
 
         if avail_size < actual_file_size:
             raise NotEnoughStorage('Not enough space in {} to store {}'.format(self.target, file_name))
