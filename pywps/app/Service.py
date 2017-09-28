@@ -428,7 +428,9 @@ class Service(object):
 
             try:
                 with open(tmp_file, 'wb') as f:
-                    shutil.copyfileobj(reference_file.raw, f)
+                    for chunk in reference_file.iter_content(chunk_size=1024):
+                        # TODO: stop writing when file is too large
+                        f.write(chunk)
             except Exception as e:
                 raise NoApplicableCode(e)
 
