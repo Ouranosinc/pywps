@@ -44,6 +44,7 @@ def load_tests(loader=None, tests=None, pattern=None):
         test_service.load_tests(),
     ])
 
+
 if __name__ == "__main__":
     result = unittest.TextTestRunner(verbosity=2).run(load_tests())
     if not result.wasSuccessful():
