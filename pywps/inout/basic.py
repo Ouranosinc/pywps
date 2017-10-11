@@ -193,8 +193,9 @@ class IOHandler(object):
             if not PY2 and hasattr(self, 'data_format'):
                 # in Python 3 we need to open binary files in binary mode.
                 def _is_binary_file(filename):
-                    fh = open("filename", 'rb')
-                    isbinary = b'\x00' in fh.read(size=512)
+                    blocksize = 512
+                    fh = open(filename, 'rb')
+                    isbinary = b'\x00' in fh.read(blocksize)
                     fh.close()
                     return isbinary
                 # Identify if the file is binary:
