@@ -190,11 +190,22 @@ class IOHandler(object):
         """Get source as simple data object"""
         if self.source_type == SOURCE_TYPE.FILE:
             openmode = 'r'
-            if (not PY2 and hasattr(self, 'data_format') and
-                    self.data_format.encoding == 'base64'):
-                # on Python 3, when the data is to be encoded to base64, we
-                # need to open the file in binary mode
-                openmode += 'b'
+            if not PY2 and hasattr(self, 'data_format'):
+                # in Python 3 we need to open binary files in binary mode.
+                def _is_binary_file(filename):
+                    fh = open("filename", 'rb')
+                    isbinary = b'\x00' in fh.read(size=512)
+                    fh.close()
+                    return isbinary
+                # Identify if the file is binary:
+                if self.data_format.encoding == 'base64':
+                    # when the data is to be encoded to base64
+                    openmode += 'b'
+                elif self.data_format.mime_type.startswith('text/'):
+                    # when mime_type is 'text/', it is not binary
+                    pass
+                elif _is_binary_file(self.source):
+                    openmode += 'b'
             file_handler = open(self.source, mode=openmode)
             content = file_handler.read()
             file_handler.close()
