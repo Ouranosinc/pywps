@@ -669,7 +669,7 @@ class Service(object):
 
 
 def _openurl(inpt):
-    """use urllib to open given href
+    """use requests to open given href
     """
     data = None
     reference_file = None
