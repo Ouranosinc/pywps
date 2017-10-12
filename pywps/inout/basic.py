@@ -26,6 +26,18 @@ _SOURCE_TYPE = namedtuple('SOURCE_TYPE', 'MEMORY, FILE, STREAM, DATA')
 SOURCE_TYPE = _SOURCE_TYPE(0, 1, 2, 3)
 
 
+def _is_textfile(filename):
+    try:
+        import magic
+        is_text = 'text/' in magic.from_file(filename, mime=True)
+    except ModuleNotFoundError:
+        blocksize = 512
+        fh = open(filename, 'rb')
+        is_text = b'\x00' not in fh.read(blocksize)
+        fh.close()
+    return is_text
+
+
 class IOHandler(object):
     """Basic IO class. Provides functions, to accept input data in file,
     memory object and stream object and give them out in all three types
@@ -186,28 +198,27 @@ class IOHandler(object):
             else:
                 return StringIO(text_type(self.source))
 
+    def _openmode(self):
+        openmode = 'r'
+        if not PY2:
+            # in Python 3 we need to open binary files in binary mode.
+            checked = False
+            if hasattr(self, 'data_format'):
+                if self.data_format.encoding == 'base64':
+                    # binary, when the data is to be encoded to base64
+                    openmode += 'b'
+                    checked = True
+                elif 'text/' in self.data_format.mime_type:
+                    # not binary, when mime_type is 'text/'
+                    checked = True
+            if not checked and not _is_textfile(self.source):
+                openmode += 'b'
+        return openmode
+
     def get_data(self):
         """Get source as simple data object"""
         if self.source_type == SOURCE_TYPE.FILE:
-            openmode = 'r'
-            if not PY2 and hasattr(self, 'data_format'):
-                # in Python 3 we need to open binary files in binary mode.
-                def _is_binary_file(filename):
-                    blocksize = 512
-                    fh = open(filename, 'rb')
-                    isbinary = b'\x00' in fh.read(blocksize)
-                    fh.close()
-                    return isbinary
-                # Identify if the file is binary:
-                if self.data_format.encoding == 'base64':
-                    # when the data is to be encoded to base64
-                    openmode += 'b'
-                elif self.data_format.mime_type.startswith('text/'):
-                    # when mime_type is 'text/', it is not binary
-                    pass
-                elif _is_binary_file(self.source):
-                    openmode += 'b'
-            file_handler = open(self.source, mode=openmode)
+            file_handler = open(self.source, mode=self._openmode())
             content = file_handler.read()
             file_handler.close()
             return content
