@@ -31,7 +31,7 @@ def _is_textfile(filename):
         # use python-magic if available
         import magic
         is_text = 'text/' in magic.from_file(filename, mime=True)
-    except ModuleNotFoundError:
+    except ImportError:
         # read the first part of the file to check for a binary indicator.
         # This method won't detect all binary files.
         blocksize = 512
