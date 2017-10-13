@@ -28,9 +28,12 @@ SOURCE_TYPE = _SOURCE_TYPE(0, 1, 2, 3)
 
 def _is_textfile(filename):
     try:
+        # use python-magic if available
         import magic
         is_text = 'text/' in magic.from_file(filename, mime=True)
     except ModuleNotFoundError:
+        # read the first part of the file to check for a binary indicator.
+        # This method won't detect all binary files.
         blocksize = 512
         fh = open(filename, 'rb')
         is_text = b'\x00' not in fh.read(blocksize)
@@ -211,6 +214,8 @@ class IOHandler(object):
                 elif 'text/' in self.data_format.mime_type:
                     # not binary, when mime_type is 'text/'
                     checked = True
+            # when we can't guess it from the mime_type, we need to check the file.
+            # mimetypes like application/xml and application/json are text files too.
             if not checked and not _is_textfile(self.source):
                 openmode += 'b'
         return openmode
