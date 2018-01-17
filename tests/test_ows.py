@@ -58,7 +58,7 @@ def create_feature():
         outLayer.CreateFeature(outFeature)
         outFeature.Destroy()
 
-        response.outputs['output'].output_format = Format(**FORMATS.GML._asdict())
+        response.outputs['output'].data_format = FORMATS.GML
         response.outputs['output'].file = outPath
         return response
 
