@@ -45,7 +45,7 @@ class ExecuteResponse(WPSResponse):
 
         :param str message: Message you need to share with the client
         :param int status_percentage: Percent done (number betwen <0-100>)
-        :param pywps.app.WPSResponse.STATUS status: process status - user should usually
+        :param pywps.response.status.STATUS status: process status - user should usually
             ommit this parameter
         """
 
