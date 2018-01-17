@@ -1,0 +1,15 @@
+name: pywps
+channels:
+- conda-forge
+- defaults
+dependencies:
+- werkzeug
+- owslib
+- lxml
+- jsonschema
+- sqlalchemy
+- gdal
+# - flufl.enum # [py27]
+- python-dateutil
+- requests
+- python-magic
